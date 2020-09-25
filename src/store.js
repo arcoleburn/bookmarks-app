@@ -1,16 +1,25 @@
-const store = {
-  bookmarks: [],
-  adding: false,
-  error: null,
-  filter: 0,
-};
+import cuid from 'cuid'
+
+const bookmarks = [{
+    id: cuid(),
+      title: "this is a hard coded example",
+      url: "https://www.theurlgoeshere.duh",
+      description: "description here. blah blah blah ",
+      rating: 0,
+      expanded: false
+  }]
+
+  const adding = false
+  const error = null
+  const filter =  0
+
 
 const findById = function (id) {
   return this.bookmarks.find((currentItem) => currentItem.id === id);
 };
 
 const addBookmark = function (bookmark) {
-  store.bookmarks.push(bookmark);
+  this.bookmarks.push(bookmark);
 };
 
 function findAndUpdate(id, newData) {
@@ -25,7 +34,10 @@ const findAndDelete = function (id) {
 };
 
 export default {
-  store,
+  bookmarks,
+  adding,
+  error,
+  filter,
   findById,
   addBookmark,
   findAndDelete,

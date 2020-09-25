@@ -6,7 +6,7 @@ import store from "./store";
 import bookmarks from "./bookmarks";
 
 const main = function () {
-  api
+  /*api
     .getBookmarks()
     .then((res) => {
       console.log("getbookmarks api call ran fee fee fee ");
@@ -21,7 +21,7 @@ const main = function () {
     .catch((error) => {
       console.log(error);
       alert("something went wrong, try again later");
-    });
+    });*/
 
   bookmarks.bindEventListeners();
   bookmarks.render();

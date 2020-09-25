@@ -7,3 +7,35 @@ form{
     display:flex;
     flex-direction: column;
 }
+
+.hidden{
+    display:none
+}
+.bookmark-element{
+    display:flex;
+    flex-direction: column;
+    padding: 5px;
+    margin: 5px;
+}
+.top-row{
+    display:flex;
+    justify-content: space-between;
+    
+}
+
+li {
+    list-style: none;
+    border:1px solid black;
+}
+
+.link-button{
+    background-color: lightseagreen;
+    color: blue;
+    padding: 3px 6px;
+        text-align: center;
+        text-decoration: none;
+      border-radius:6px;
+       
+        margin: 4px 2px;
+        cursor: pointer;
+}

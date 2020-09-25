@@ -16,16 +16,34 @@
 
           <div>
             <button class="add">ADD</button>
-            <select>
-              Filter:
+            <label for= "rating-filter"> Filter by Rating
+                <select class='filter' id = "rating-filter" name="rating-filter">
+                <option selected value="1">1 star + </option>
+                <option value="2">2 star +</option>
+                <option value="3">3 star +</option>
+                <option value="4">4 star +</option>
+                <option value="5">5 star </option>
             </select>
           </div>
         </div>
         <section class="bookmark-list">
-          <p>You don't have any bookmarks yet... :(</p>
+          <form class="add-bookmarks-form hidden">
+            <label for="item">Title:</label>
+            <input type="text" name="item-name" id="item-name" />
+            <label for="url">URL: </label>
+            <input type="text" name="url" id="url" />
+            <label for="description">Description:</label>
+            <textarea name="description" id="description"></textarea>
+            <label for="rating">Rating: </label>
+            <input type="number" min="1" max="5" id="rating"/>
+            <button class="add-bookmark-button">Add Bookmark</button>
+            <button type="reset"  class="cancel">Cancel</button>
+          </form>
+          <section class="js-display-bookmarks">
+            <p>You don't have any bookmarks yet... :(</p>
+          </section>
         </section>
-        
-    </section>
+      </section>
     </main>
   </body>
 </html>
