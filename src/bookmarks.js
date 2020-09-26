@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import $ from "jquery";
 import cuid from "cuid";
 
@@ -13,7 +14,7 @@ const generateBookmarkElement = function (bookmark) {
   <div class="bottom-row hidden">
   <div id='url'class='hidden'> <a class='link-button' href="${bookmark.url}" target='_blank'> Go there!</a></div>
   <p> Description: </p>
-  <p>${bookmark.description}</p> 
+  <p>${bookmark.desc}</p> 
   <button class= "delete"> Delete </button></div></li>`;
 };
 
@@ -25,26 +26,36 @@ const generateBookmarksString = function (bookmarks) {
   return bookmarksList.join("");
 };
 
+const generateError = function (error) {
+  $(".err-msg").children("span").html(`${store.error}`);
+};
+
+const renderError = function () {
+  if (store.error) {
+    generateError(store.error);
+    $(".err-msg").toggleClass("hidden");
+  }
+};
+
+const handleCloseError = function () {
+  $("body").on("click", ".errbtn", function (evt) {
+    evt.preventDefault();
+    console.log("handle close err ran");
+    store.setError(null);
+    console.log("err state is: ", store.error);
+    $(".err-msg").toggleClass("hidden");
+  });
+};
 const render = function () {
+  $('.loading').addClass('hidden')
+  renderError();
   console.log("render ran");
   let bookmarks = [...store.bookmarks];
 
   const bookmarksStr = generateBookmarksString(bookmarks);
   $(".js-display-bookmarks").html(bookmarksStr);
 };
-const addScreen = function () {
-  console.log("add screen ran");
-  return `<form class="add-bookmarks-form">
-  <label for="item">Title:</label>
-  <input type="text" name="item-name" id="item-name" />
-  <label for="url">URL: </label>
-  <input type="text" name="url" id="url" />
-  <label for="description">Description:</label>
-  <textarea name="description" id="description"></textarea>
-  <button  class="add-bookmark-button">Add Bookmark</button>
-  <button  class="cancel-button">Cancel</button>
-</form>`;
-};
+
 
 const handleAddButton = function () {
   $(".header").on("click", ".add", function (evt) {
@@ -60,36 +71,41 @@ const handleNewBookmarkSubmit = function () {
     const newBookmarkTitle = $("#item-name").val();
     const newBookmarkUrl = $("#url").val();
     const newBookmarkDescription = $("#description").val();
+    console.log("new desc: ", newBookmarkDescription)
     const newBookmarkRating = $("#rating").val();
     const newBookmark = {
-      id: cuid(),
       title: newBookmarkTitle,
       url: newBookmarkUrl,
       rating: newBookmarkRating,
-      description: newBookmarkDescription,
-      expanded: false,
+      desc: newBookmarkDescription
+     
     };
-    store.addBookmark(newBookmark);
+    
     console.log("current bkmks: ", store.bookmarks);
-    console.log("first bmk id is: ", store.bookmarks[0]["id"]);
-    render();
 
-    /*api
+    render();
+    let isOk;
+    api
       .createBookmark(newBookmark)
       .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        throw new Error(res.statusText);
+        isOk = res.ok;
+        return res.json();
       })
 
       .then((jsonData) => {
-        store.addBookmark(jsonData);
-        render();
+        if (isOk) {
+          store.addBookmark(jsonData);
+          render();
+        } else {
+          throw new Error(jsonData.message);
+        }
       })
       .catch((error) => {
-        console.log(error.message);
-      });*/
+        store.setError(error.message);
+        console.log("error: ", error);
+        render();
+        console.log("store err: ", store.error);
+      });
   });
 };
 
@@ -102,7 +118,7 @@ const handleCancelSubmit = function () {
   });
 };
 
-const getBookmarkIdFromElement = function (bookmark) {
+const getBookmarkFromElement = function (bookmark) {
   let id = $(bookmark).closest(".bookmark-element").data("item-id");
   console.log("id of clicked is: ", id);
   return store.findById(id);
@@ -110,17 +126,27 @@ const getBookmarkIdFromElement = function (bookmark) {
 
 const handleDeleteBookmark = function () {
   $(".js-display-bookmarks").on("click", ".delete", (evt) => {
-    console.log("bookmks before del: ", store.bookmarks);
-    const theId = getBookmarkIdFromElement(evt.currentTarget);
-    let toDel = store.bookmarks.indexOf(theId);
-    console.log("index to del", toDel);
-    store.bookmarks.splice(toDel, 1);
-    console.log("bookmarks after del: ", store.bookmarks);
-    render();
-    /*api.deleteBookmark(id).then(() => {
-      store.findAndDelete(id);
-      render();
-    });*/
+   
+    const bookmk = getBookmarkFromElement(evt.currentTarget);
+    const theId = bookmk.id;
+    let toDel = store.bookmarks.indexOf(bookmk);
+    console.log('index ', toDel)
+    console.log("id to del", theId);
+    
+    
+    api
+      .deleteBookmark(theId)
+      .then(() => {
+        console.log("bookmarks pre: ", store.bookmarks);
+        store.bookmarks.splice(toDel, 1);
+        
+        console.log("bookmarks post: ", store.bookmarks);
+        render();
+      })
+      .catch((error) => {
+        store.setError(error.message);
+        
+      });
   });
 };
 
@@ -128,7 +154,7 @@ const handleBookMarkExpand = function () {
   $(".js-display-bookmarks").on("click", "li", function (evt) {
     console.log("handle expand ran");
     $(this).children(".bottom-row").toggleClass("hidden");
-    $(this).children().children('#url').toggleClass("hidden");
+    $(this).children().children("#url").toggleClass("hidden");
   });
 };
 
@@ -149,11 +175,13 @@ const handleFilter = function () {
 };
 
 const bindEventListeners = function () {
-  handleNewBookmarkSubmit(),
-    handleBookMarkExpand(),
-    handleDeleteBookmark();
+  handleNewBookmarkSubmit();
+  handleBookMarkExpand();
+  handleDeleteBookmark();
   handleAddButton();
   handleFilter();
+  handleCancelSubmit();
+  handleCloseError();
 };
 
 export default {

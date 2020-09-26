@@ -4,7 +4,8 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: __dirname + '/dist',
-    filename: 'index_bundle.js'
+    filename: 'index_bundle.js'//,
+    //publicPath: "/YOUR_REPO_NAME/"
   },
   mode: 'development',
   plugins: [
